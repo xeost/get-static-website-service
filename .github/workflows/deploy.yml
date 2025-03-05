@@ -32,7 +32,7 @@ jobs:
           context: .
           push: true
           tags: xeost/get-static-website:latest
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64/v8
 
       # Deploy to remote server
     #   - name: Deploy to Server
