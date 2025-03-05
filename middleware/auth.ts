@@ -1,0 +1,23 @@
+import { Context, Next } from 'hono'
+
+/**
+ * Middleware to validate API key in request headers
+ * @param c - Hono context
+ * @param next - Next middleware function
+ * @returns Response or proceeds to next middleware
+ */
+export async function apiKeyAuth(c: Context, next: Next) {
+  // Skip authentication for health check endpoint
+  if (c.req.path === '/health') {
+    return await next()
+  }
+
+  const apiKey = c.req.header('X-API-Key')
+  const validApiKey = Deno.env.get('API_KEY')
+
+  if (!apiKey || apiKey !== validApiKey) {
+    return c.json({ error: 'Unauthorized - Invalid API Key' }, 401)
+  }
+
+  await next()
+} 

@@ -1,25 +1,27 @@
-# Deno specific
+# Environment variables
+.env*
+!.env.example
+
+# Deno
 .deno/
 *.orig
 *.pyc
 *.swp
 
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
 # Dependencies
 /node_modules
 /vendor
 
-# IDE specific
+# Editor directories and files
 .vscode/
 .idea/
 *.sublime-workspace
 *.sublime-project
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # OS specific
 .DS_Store
