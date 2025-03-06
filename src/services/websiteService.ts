@@ -1,4 +1,4 @@
-import type { Website } from "@models/website.js";
+import type { Website } from "models/website.js";
 
 export class WebsiteService {
   private websites: Website[] = [

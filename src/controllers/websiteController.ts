@@ -1,5 +1,5 @@
 import type { Context } from "hono"; // Hono import
-import { WebsiteService } from "@services/websiteService.js";
+import { WebsiteService } from "services/websiteService.js";
 
 const websiteService = new WebsiteService();
 

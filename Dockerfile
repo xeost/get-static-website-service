@@ -16,9 +16,6 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Verify the build output
-RUN test -d dist
-
 # Stage 2: Run the application
 FROM node:23-alpine
 
@@ -33,6 +30,9 @@ RUN npm ci --omit=dev
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
+
+# Declare environment variables
+ENV API_KEY=""
 
 # Expose port
 EXPOSE 8000

@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
-import { getWebsite } from "@controllers/websiteController.js";
-import { getPage } from "@controllers/pageController.js";
-import { apiKeyAuth } from '@middleware/auth.js'
+import { getWebsite } from "controllers/websiteController.js";
+import { getPage } from "controllers/pageController.js";
+import { apiKeyAuth } from 'middleware/auth.js'
 
 const app = new Hono();
 
