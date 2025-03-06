@@ -18,7 +18,8 @@
       "@services/*": ["src/services/*"],
       "@utils/*": ["src/utils/*"]
     },
-    "rootDir": "."
+    "rootDir": ".",
+    "outDir": "dist"
   },
   "include": ["src/**/*", "tests/**/*"],
   "exclude": ["node_modules", "dist"]

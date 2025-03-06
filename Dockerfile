@@ -16,6 +16,9 @@ COPY . .
 # Build the application
 RUN npm run build
 
+# Verify the build output
+RUN test -d dist
+
 # Stage 2: Run the application
 FROM node:23-alpine
 
