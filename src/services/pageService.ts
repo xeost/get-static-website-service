@@ -1,4 +1,4 @@
-import { Page } from "@models/page.ts";
+import type { Page } from "@models/page.js";
 
 export class PageService {
   private pages: Page[] = [

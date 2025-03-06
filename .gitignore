@@ -2,36 +2,27 @@
 .env*
 !.env.example
 
-# Deno
-.deno/
-*.orig
-*.pyc
-*.swp
+# dev
+.yarn/
+!.yarn/releases
+.vscode/*
+!.vscode/launch.json
+!.vscode/*.code-snippets
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/shelf
 
-# Dependencies
-/node_modules
-/vendor
+# deps
+node_modules/
 
-# Editor directories and files
-.vscode/
-.idea/
-*.sublime-workspace
-*.sublime-project
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# OS specific
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Logs
+# logs
+logs/
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Build output
-/dist
-/build
+# misc
+.DS_Store

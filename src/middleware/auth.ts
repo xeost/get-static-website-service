@@ -1,4 +1,4 @@
-import { Context, Next } from 'hono'
+import type { Context, Next } from 'hono'
 
 /**
  * Middleware to validate API key in request headers
@@ -13,7 +13,7 @@ export async function apiKeyAuth(c: Context, next: Next) {
   }
 
   const apiKey = c.req.header('X-API-Key')
-  const validApiKey = Deno.env.get('API_KEY')
+  const validApiKey = process.env.API_KEY
 
   if (!apiKey || apiKey !== validApiKey) {
     return c.json({ error: 'Unauthorized - Invalid API Key' }, 401)

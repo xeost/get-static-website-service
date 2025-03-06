@@ -1,5 +1,5 @@
-import { Context } from "hono";
-import { PageService } from "@services/pageService.ts";
+import type { Context } from "hono";
+import { PageService } from "@services/pageService.js";
 
 const pageService = new PageService();
 

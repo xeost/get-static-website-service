@@ -1,0 +1,35 @@
+{
+  "name": "get-static-website-service",
+  "version": "0.0.1",
+  "description": "Download and convert any website into a local static website.",
+  "homepage": "https://github.com/xeost/get-static-website-service#readme",
+  "bugs": {
+    "url": "https://github.com/xeost/get-static-website-service/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xeost/get-static-website-service.git"
+  },
+  "license": "MIT",
+  "author": "Xeost & Fabián Karaben",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=.env src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.8",
+    "acorn": "^8.14.1",
+    "cheerio": "^1.0.0",
+    "crawlee": "^3.13.0",
+    "hono": "^4.7.4",
+    "playwright": "^1.50.1",
+    "postcss": "^8.5.3",
+    "postcss-value-parser": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "tsx": "^4.7.1"
+  }
+}
