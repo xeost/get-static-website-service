@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { getWebsite } from "controllers/websiteController.js";
-import { getPage } from "controllers/pageController.js";
+import { getPage, getTaskStatus } from "controllers/pageController.js";
 import { apiKeyAuth } from 'middleware/auth.js'
 
 const app = new Hono();
@@ -11,6 +11,7 @@ app.use('*', apiKeyAuth)
 
 app.get("/get-website", getWebsite);
 app.get("/get-page", getPage);
+app.get("/tasks/:taskId", getTaskStatus);
 
 // Basic health check
 app.get("/health", (c) => c.json({ status: 'healthy' }, 200));
