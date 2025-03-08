@@ -32,3 +32,6 @@ dist/
 
 # Crawlee storage
 storage/
+
+# Temp on dev environment
+.temp/

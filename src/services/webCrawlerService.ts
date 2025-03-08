@@ -20,7 +20,9 @@ export class WebCrawlerService {
    * @returns The updated task after processing
    */
   async downloadPage(taskId: string): Promise<Task | undefined> {
-    const outputDir = `./output/${taskId}`;
+    const outputDir = process.env.NODE_ENV === 'production' 
+      ? `/temp/crawler-outputs/${taskId}`
+      : `./.temp/crawler-outputs/${taskId}`;
     
     // Map to store original URLs and their local paths
     const assetMap = new Map<string, string>();
@@ -51,37 +53,21 @@ export class WebCrawlerService {
 
         preNavigationHooks: [
           async ({ page }) => {
-            // Listen to all page requests
-            page.on('request', async (request) => {
-              if (request.url().startsWith(task.url)) {
-                console.log(`Request made: ${request.url()}`);
-              }
-      
-              await page.waitForTimeout(500); // Wait a little for new requests
-            });
-      
+            // Listen to all page responses
             page.on('response', async (response: Response) => {
               const url = response.url();
               const contentType = response.headers()['content-type'] || '';
-      
-              // Enhanced favicon detection
-              const isFavicon =
-                url.includes('favicon') ||
-                url.endsWith('.ico') ||
-                url.includes('icon') && (
-                  contentType.includes('image/') ||
-                  contentType.includes('icon') ||
-                  contentType === ''  // Some servers don't set content-type for favicons
-                );
-      
-              // Capture images, CSS, JavaScript files, and favicons
+    
+              // if (url.startsWith(task.url)) {
+              //   console.log(`Response made: ${url}`);
+              // }
+
+              // Capture images, CSS and JavaScript files
               if (
                 contentType.startsWith('image/') ||
                 contentType.startsWith('text/css') ||
-                contentType.startsWith('application/javascript') ||
-                isFavicon
+                contentType.startsWith('application/javascript')
               ) {
-                //console.log(`Asset path: ${url}`);
                 try {
                   const buffer = await response.body();
                   const localPath = getLocalPath(url, outputDir);
@@ -91,12 +77,16 @@ export class WebCrawlerService {
                   if (assetUrl.hostname === pageUrl.hostname) {
                     await saveAsset(buffer, localPath);
                     assetMap.set(url, localPath);
-                    //console.log(`Successfully saved asset: ${url}`);
                   }
                 } catch (error) {
                   console.error(`Failed to save asset ${url}:`, error);
                 }
               }
+
+              // Wait a little for new requests
+              // This is necessary to give other requests/responses time to happen,
+              // otherwise the browser will close and the whole process will end
+              await page.waitForTimeout(500);
             });
           },
         ],
@@ -105,7 +95,12 @@ export class WebCrawlerService {
         async requestHandler({ page, request }) {
           // Wait for the page to load completely
           await page.waitForLoadState('networkidle');
-          
+
+          //
+          // --- STEP ---
+          // Process the HTML content.
+
+
           // Get the HTML content
           let htmlContent = await page.content();
 
@@ -117,7 +112,7 @@ export class WebCrawlerService {
             assetMap.set(key, value);
           }
 
-          // Download all assets (images, CSS, JS, favicons)
+          // Download all assets referenced in HTML (images, CSS, JS, favicons)
           await downloadAssets(assetMap);
 
           // Update HTML to use local paths for downloaded assets
@@ -133,7 +128,13 @@ export class WebCrawlerService {
           await createDirectory(dirPath);
           await saveAsset(Buffer.from(modifiedHtml), path.join(dirPath, fileName));
 
-          // Hover over all hoverable elements on the page
+
+          //
+          // --- STEP ---
+          // Simulate user interaction to throw requests that will be intercepted by the crawler.
+          //
+
+          // Simulate hover events over all hoverable elements on the page
           const hoverableElements = await page.$$('button, a, [role="button"], [role="link"], input, select, img, video, audio, svg');
           for (const element of hoverableElements) {
             await element.hover({ timeout: 1000 }).catch(() => {
@@ -142,10 +143,12 @@ export class WebCrawlerService {
             await page.waitForTimeout(500); // Wait between hovers
           }
 
-          //console.log(`Page processing completed: ${page.url()}`);
-
-
-          //console.log('------- POST PAGE PROSESSING STARTED -------');
+          //
+          // --- STEP ---
+          // Iterate over all the downloaded assets and check if there are any links to other assets.
+          //
+          // Note: Disabled for now.
+          //
 
           // assetMap.clear();
 
@@ -166,10 +169,13 @@ export class WebCrawlerService {
           //   }
           // }
 
-          //console.log('Asset map:', assetMap);
-
           // Download all assets (images, CSS, JS, favicons)
           // await downloadAssets(assetMap);
+
+          //
+          // --- STEP ---
+          // Finishing up.
+          //
 
           // Extract links from the current page
           // and add them to the crawling queue.
