@@ -56,7 +56,7 @@ export const getTaskStatus = (c: Context) => {
     return c.json({ error: "Task ID is required" }, 400);
   }
 
-  const task = pageService.getTask(taskId);
+  const task = taskStore.getTask(taskId);
   if (!task) {
     return c.json({ error: "Task not found" }, 404);
   }

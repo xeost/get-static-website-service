@@ -16,6 +16,18 @@ app.get("/tasks/:taskId", getTaskStatus);
 // Basic health check
 app.get("/health", (c) => c.json({ status: 'healthy' }, 200));
 
+// Test endpoint to receive callbacks
+app.post("/test-callback", async (c) => {
+  const body = await c.req.json();
+  console.log('Received callback:', {
+    taskId: body.taskId,
+    status: body.status,
+    resultLength: body.result ? body.result.length : 0,
+    error: body.error
+  });
+  return c.json({ received: true }, 200);
+});
+
 app.get("/", (c) => c.json({ status: 'Welcome to the API' }, 200));
 
 serve({

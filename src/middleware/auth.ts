@@ -8,7 +8,7 @@ import type { Context, Next } from 'hono'
  */
 export async function apiKeyAuth(c: Context, next: Next) {
   // Skip authentication for health check endpoint
-  if (c.req.path === '/health') {
+  if (c.req.path === '/health' || c.req.path === '/test-callback') {
     return await next()
   }
 

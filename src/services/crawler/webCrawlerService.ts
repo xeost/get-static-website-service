@@ -184,10 +184,7 @@ export class WebCrawlerService {
           // Update the task with the result
           self.taskStore.updateTask(taskId, {
             status: 'completed',
-            result: {
-              url: request.url,
-              html: htmlContent
-            }
+            result: htmlContent,
           });
         }
       });

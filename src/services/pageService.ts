@@ -29,7 +29,7 @@ export class PageService {
         if (updatedTask) {
           // Send the result to the callback URL
           this.sendCallback(updatedTask).catch(error => {
-            console.error(`Error sending callback for task ${task.id}:`, error);
+            console.error(`Error sending callback for task ${task.id}, URL: ${task.callbackUrl}`);
           });
         }
       })
@@ -41,39 +41,26 @@ export class PageService {
   }
 
   /**
-   * Get a task by ID
-   * @param taskId The ID of the task to get
-   * @returns The task or undefined if not found
-   */
-  getTask(taskId: string): Task | undefined {
-    return this.taskStore.getTask(taskId);
-  }
-
-  /**
    * Send the task result to the callback URL
    * @param task The task with the result to send
    */
   private async sendCallback(task: Task): Promise<void> {
-    try {
-      // Send the result to the callback URL
-      const response = await fetch(task.callbackUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          taskId: task.id,
-          status: task.status,
-          result: task.result,
-          error: task.error
-        })
-      });
+    // Send the result to the callback URL
+    const response = await fetch(task.callbackUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        taskId: task.id,
+        status: task.status,
+        result: task.result,
+        error: task.error
+      })
+    });
 
-      if (!response.ok) {
-        console.error(`Failed to send callback for task ${task.id}: ${response.statusText}`);
-      }
-    } catch (error) {
-      console.error(`Error sending callback for task ${task.id}:`, error);
+    if (!response.ok) {
+      throw new Error(`Failed to send callback for task ${task.id}: ${response.statusText}`);
     }
   }
 }
