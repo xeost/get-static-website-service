@@ -8,7 +8,7 @@ export async function downloadAssets(assetMap: Map<string, string>): Promise<voi
       if (response.ok) {
         const buffer = Buffer.from(await response.arrayBuffer());
         const localPath = assetMap.get(url)!;
-        await saveAsset(buffer, localPath);
+        await saveFile(buffer, localPath);
         //console.log(`Successfully downloaded asset: ${url}`);
       }
     } catch (error) {
@@ -17,7 +17,7 @@ export async function downloadAssets(assetMap: Map<string, string>): Promise<voi
   }
 }
 
-export async function saveAsset(buffer: Buffer, localPath: string): Promise<void> {
+export async function saveFile(buffer: Buffer, localPath: string): Promise<void> {
   await fs.mkdir(path.dirname(localPath), { recursive: true });
   await fs.writeFile(localPath, buffer);
 }

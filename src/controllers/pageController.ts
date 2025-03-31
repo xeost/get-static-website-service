@@ -1,11 +1,12 @@
 import type { Context } from "hono";
-import type { Task } from "services/taskStoreService.js";
 import { TaskStoreService } from "services/taskStoreService.js";
-import { WebCrawlerService } from "services/webCrawlerService.js";
+import { WebCrawlerService } from "services/crawler/webCrawlerService.js";
+import { PageService } from "services/pageService.js";
 
 // Create singleton instances of the services
 const taskStore = new TaskStoreService();
 const webCrawler = new WebCrawlerService(taskStore);
+const pageService = new PageService(taskStore, webCrawler);
 
 /**
  * Get a page by URL using the webhook pattern
@@ -27,23 +28,8 @@ export const getPage = async (c: Context) => {
   }
 
   try {
-    // Create a new task
-    const task = taskStore.createTask(url, callbackUrl);
-
-    // Start processing the task in the background
-    // We don't await this to return immediately
-    webCrawler.downloadPage(task.id)
-      .then(updatedTask => {
-        if (updatedTask) {
-          // Send the result to the callback URL
-          sendCallback(updatedTask).catch(error => {
-            console.error(`Error sending callback for task ${task.id}:`, error);
-          });
-        }
-      })
-      .catch(error => {
-        console.error(`Error processing task ${task.id}:`, error);
-      });
+    // Use PageService to handle the page download
+    const task = await pageService.startPageDownload(url, callbackUrl);
 
     // Return the task ID and status
     return c.json({
@@ -70,7 +56,7 @@ export const getTaskStatus = (c: Context) => {
     return c.json({ error: "Task ID is required" }, 400);
   }
 
-  const task = taskStore.getTask(taskId);
+  const task = pageService.getTask(taskId);
   if (!task) {
     return c.json({ error: "Task not found" }, 404);
   }
@@ -83,30 +69,3 @@ export const getTaskStatus = (c: Context) => {
     updated_at: task.updatedAt
   });
 };
-
-/**
- * Send the task result to the callback URL
- */
-async function sendCallback(task: Task): Promise<void> {
-  try {
-    // Send the result to the callback URL
-    const response = await fetch(task.callbackUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        taskId: task.id,
-        status: task.status,
-        result: task.result,
-        error: task.error
-      })
-    });
-
-    if (!response.ok) {
-      console.error(`Failed to send callback for task ${task.id}: ${response.statusText}`);
-    }
-  } catch (error) {
-    console.error(`Error sending callback for task ${task.id}:`, error);
-  }
-}

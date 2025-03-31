@@ -2,11 +2,11 @@ import { PlaywrightCrawler } from 'crawlee';
 import * as cheerio from 'cheerio';
 import path from 'path';
 import { type Response } from 'playwright-core';
-import type { Task } from './taskStoreService.js';
-import { TaskStoreService } from './taskStoreService.js';
-import { createDirectory, deleteDirectory, downloadAssets, saveAsset } from './crawler-utils/fs.js';
-import { getLocalPath } from './crawler-utils/shared.js';
-import { getAllAssetsPathsFromHtml, modifyHtml, removeAnalyticsFromHtml } from './crawler-utils/html.js';
+import type { Task } from 'models/task.js';
+import { TaskStoreService } from 'services/taskStoreService.js';
+import { createDirectory, deleteDirectory, downloadAssets, saveFile } from './utils/fs.js';
+import { getLocalPath } from './utils/shared.js';
+import { getAllAssetsPathsFromHtml, replaceAssetUrlsWithLocalPaths, removeAnalyticsFromHtml } from './utils/html.js';
 
 export class WebCrawlerService {
   private taskStore: TaskStoreService;
@@ -75,7 +75,7 @@ export class WebCrawlerService {
                   const assetUrl = new URL(url);
                   const pageUrl = new URL(page.url());
                   if (assetUrl.hostname === pageUrl.hostname) {
-                    await saveAsset(buffer, localPath);
+                    await saveFile(buffer, localPath);
                     assetMap.set(url, localPath);
                   }
                 } catch (error) {
@@ -116,7 +116,7 @@ export class WebCrawlerService {
           await downloadAssets(assetMap);
 
           // Update HTML to use local paths for downloaded assets
-          const modifiedHtml = modifyHtml(htmlContent, assetMap, page.url(), outputDir);
+          const modifiedHtml = replaceAssetUrlsWithLocalPaths(htmlContent, assetMap, page.url(), outputDir);
 
           // Create a local path for the HTML file based on the URL path
           const pageUrl = new URL(page.url());
@@ -126,7 +126,7 @@ export class WebCrawlerService {
 
           // Create directory and save HTML file
           await createDirectory(dirPath);
-          await saveAsset(Buffer.from(modifiedHtml), path.join(dirPath, fileName));
+          await saveFile(Buffer.from(modifiedHtml), path.join(dirPath, fileName));
 
 
           //

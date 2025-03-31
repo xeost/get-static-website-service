@@ -1,15 +1,5 @@
+import type { Task } from 'models/task.js';
 import { v4 as uuidv4 } from 'uuid';
-
-export interface Task {
-  id: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  url: string;
-  callbackUrl: string;
-  createdAt: Date;
-  updatedAt: Date;
-  result?: any;
-  error?: string;
-}
 
 /**
  * In-memory task store service

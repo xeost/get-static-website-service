@@ -65,7 +65,7 @@ export function removeAnalyticsFromHtml(html: string): string {
 }
 
 // Modify HTML to point to local assets
-export function modifyHtml(html: string, assetMap: Map<string, string>, pageUrl: string, outputDir: string): string {
+export function replaceAssetUrlsWithLocalPaths(html: string, assetMap: Map<string, string>, pageUrl: string, outputDir: string): string {
   if (!html) {
     console.error('No HTML content provided');
     return '';
