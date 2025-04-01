@@ -23,7 +23,7 @@ app.post("/test-pages-start-download-callback", async (c) => {
   console.log('Received callback:', {
     taskId: body.taskId,
     status: body.status,
-    // resultLength: body.result ? body.result.length : 0,
+    resultLength: body.result ? body.result.length : 0,
     error: body.error
   });
   return c.json({ received: true }, 200);

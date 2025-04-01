@@ -34,3 +34,12 @@ export async function deleteDirectory(directoryPath: string): Promise<void> {
     console.error(`Failed to delete directory ${directoryPath}:`, error);
   }
 }
+
+export async function deleteFile(filePath: string): Promise<void> {
+  try {
+    await fs.unlink(filePath);
+    //console.log(`Successfully deleted file: ${filePath}`);
+  } catch (error) {
+    console.error(`Failed to delete file ${filePath}:`, error);
+  }
+}

@@ -22,6 +22,7 @@
     "@hono/node-server": "^1.13.8",
     "@types/node-fetch": "^2.6.12",
     "acorn": "^8.14.1",
+    "archiver": "^7.0.1",
     "cheerio": "^1.0.0",
     "crawlee": "^3.13.0",
     "hono": "^4.7.4",
@@ -31,6 +32,7 @@
     "postcss-value-parser": "^4.2.0"
   },
   "devDependencies": {
+    "@types/archiver": "^6.0.3",
     "@types/node": "^20.11.17",
     "@types/uuid": "^10.0.0",
     "tsc-alias": "^1.8.11",
