@@ -3,7 +3,12 @@ import { WebsiteService } from "services/websiteService.js";
 
 const websiteService = new WebsiteService();
 
-export const getWebsite = (c: Context) => {
+export const getAllWebsiteUrls = (c: Context) => {
+  const urls: string[] = []; //websiteService.getAllWebsiteUrls();
+  return c.json(urls);
+};
+
+export const startWebsiteDownload = (c: Context) => {
   const id = Number(c.req.query("id")); // Query param for simplicity
   if (isNaN(id)) {
     return c.json({ error: "Invalid ID" }, 400);

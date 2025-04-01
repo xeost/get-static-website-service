@@ -1,19 +1,17 @@
 import type { Context } from "hono";
 import { TaskStoreService } from "services/taskStoreService.js";
-import { WebCrawlerService } from "services/crawler/webCrawlerService.js";
 import { PageService } from "services/pageService.js";
 
 // Create singleton instances of the services
 const taskStore = new TaskStoreService();
-const webCrawler = new WebCrawlerService(taskStore);
-const pageService = new PageService(taskStore, webCrawler);
+const pageService = new PageService(taskStore);
 
 /**
  * Get a page by URL using the webhook pattern
  * This endpoint accepts a URL and a callback URL, and returns a task ID
  * The HTML content will be sent to the callback URL when ready
  */
-export const getPage = async (c: Context) => {
+export const startPageDownload = async (c: Context) => {
   // Get the URL and callback URL from the request
   const url = c.req.query("url");
   const callbackUrl = c.req.query("callback_url");
@@ -49,7 +47,7 @@ export const getPage = async (c: Context) => {
 /**
  * Get the status of a task by ID
  */
-export const getTaskStatus = (c: Context) => {
+export const getTask = (c: Context) => {
   const taskId = c.req.param("taskId");
   
   if (!taskId) {

@@ -5,6 +5,5 @@ export interface Task {
     callbackUrl: string;
     createdAt: Date;
     updatedAt: Date;
-    result?: string;
     error?: string;
   }

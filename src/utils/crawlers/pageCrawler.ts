@@ -1,39 +1,18 @@
 import { PlaywrightCrawler } from 'crawlee';
-import * as cheerio from 'cheerio';
 import path from 'path';
 import { type Response } from 'playwright-core';
-import type { Task } from 'models/task.js';
-import { TaskStoreService } from 'services/taskStoreService.js';
 import { createDirectory, deleteDirectory, downloadAssets, saveFile } from './utils/fs.js';
 import { getLocalPath } from './utils/shared.js';
 import { getAllAssetsPathsFromHtml, replaceAssetUrlsWithLocalPaths, removeAnalyticsFromHtml } from './utils/html.js';
 
-export class WebCrawlerService {
-  private taskStore: TaskStoreService;
-
-  constructor(taskStore: TaskStoreService) {
-    this.taskStore = taskStore;
-  }
-
+export class PageCrawler {
   /**
    * Download HTML content from a URL using crawlee with playwright
    * @returns The updated task after processing
    */
-  async downloadPage(taskId: string): Promise<Task | undefined> {
-    const outputDir = process.env.NODE_ENV === 'production' 
-      ? `/temp/crawler-outputs/${taskId}`
-      : `./.temp/crawler-outputs/${taskId}`;
-    
+  async downloadPage(pageUrl: string, outputDir: string) {    
     // Map to store original URLs and their local paths
     const assetMap = new Map<string, string>();
-
-    const task = this.taskStore.getTask(taskId);
-    if (!task) {
-      throw new Error(`Task with ID ${taskId} not found`);
-    }
-
-    // Update task status to processing
-    this.taskStore.updateTask(taskId, { status: 'processing' });
 
     try {
       // Store reference to this for use in the crawler
@@ -100,7 +79,6 @@ export class WebCrawlerService {
           // --- STEP ---
           // Process the HTML content.
 
-
           // Get the HTML content
           let htmlContent = await page.content();
 
@@ -108,7 +86,7 @@ export class WebCrawlerService {
           htmlContent = removeAnalyticsFromHtml(htmlContent);
 
           // Load all assets referenced in HTML into assetMap
-          for (const [key, value] of (await getAllAssetsPathsFromHtml(htmlContent, task.url, outputDir)).entries()) {
+          for (const [key, value] of (await getAllAssetsPathsFromHtml(htmlContent, page.url(), outputDir)).entries()) {
             assetMap.set(key, value);
           }
 
@@ -179,13 +157,7 @@ export class WebCrawlerService {
 
           // Extract links from the current page
           // and add them to the crawling queue.
-          // await enqueueLinks();
-          
-          // Update the task with the result
-          self.taskStore.updateTask(taskId, {
-            status: 'completed',
-            result: htmlContent,
-          });
+          // await enqueueLinks();        
         }
       });
 
@@ -193,21 +165,10 @@ export class WebCrawlerService {
       await deleteDirectory(outputDir);
 
       // Start the crawler with the task URL
-      await crawler.run([task.url]);
+      await crawler.run([pageUrl]);
       
-      // Return the updated task
-      return this.taskStore.getTask(taskId);
     } catch (error) {
-      console.error(`Error processing task ${taskId}:`, error);
-      
-      // Update the task with the error
-      this.taskStore.updateTask(taskId, {
-        status: 'failed',
-        error: error instanceof Error ? error.message : String(error)
-      });
-
-      // Return the updated task with error
-      return this.taskStore.getTask(taskId);
+      console.error(`Error processing page ${pageUrl}:`, error);
     }
   }
 }
