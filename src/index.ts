@@ -18,12 +18,24 @@ app.get("/tasks/:taskId", getTask);
 app.get("/health", (c) => c.json({ status: 'healthy' }, 200));
 
 // Test endpoint to receive callbacks
-app.post("/test-callback", async (c) => {
+app.post("/test-pages-start-download-callback", async (c) => {
   const body = await c.req.json();
   console.log('Received callback:', {
     taskId: body.taskId,
     status: body.status,
     // resultLength: body.result ? body.result.length : 0,
+    error: body.error
+  });
+  return c.json({ received: true }, 200);
+});
+
+// Test endpoint to receive callbacks
+app.post("/test-websites-get-all-urls-callback", async (c) => {
+  const body = await c.req.json();
+  console.log('Received callback:', {
+    taskId: body.taskId,
+    status: body.status,
+    resultLength: body.result ? body.result.length : 0,
     error: body.error
   });
   return c.json({ received: true }, 200);
